@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Taxi Analytics Engine</title>
+    <!-- Modern premium font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Three.js & GSAP for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    
+    <!-- 3D Interactive Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container fade-in">
+        
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <a href="index.html" class="nav-link active">Live Dashboard</a>
+            <a href="presentation.html" class="nav-link">Architecture Deck</a>
+        </nav>
+
+        <header class="header">
+            <div class="badge">AWS CLOUD DATA LAKE</div>
+            <h1>NYC Taxi <span class="highlight">Analytics</span> Engine</h1>
+            <p>End-to-End Pipeline: AWS S3 &rarr; Athena &rarr; Custom Web Frontend</p>
+        </header>
+
+        <!-- Live Demo Video Section -->
+        <section class="demo-section">
+            <div class="demo-container glass-panel">
+                <div class="demo-header">
+                    <span class="live-dot"></span>
+                    <h2>Interactive Dashboard Recording</h2>
+                </div>
+                <video id="main-demo-video" class="demo-video" controls loop muted>
+                    <source src="assets/Demo.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </section>
+
+        <!-- The Reconstructed Dashboard using the exported image assets -->
+        <h2 class="section-title">Key Performance Indicators</h2>
+        
+        <main class="dashboard-grid">
+            <!-- Top Row: KPIs -->
+            <div class="glass-card kpi-card fade-up" style="animation-delay: 0.1s">
+                <img src="assets/total_amount.png" alt="Total Revenue">
+            </div>
+            <div class="glass-card kpi-card fade-up" style="animation-delay: 0.2s">
+                <img src="assets/trip_duration_total.png" alt="Total Trips">
+            </div>
+            <div class="glass-card kpi-card fade-up" style="animation-delay: 0.3s">
+                <img src="assets/avg_trip_duration.png" alt="Avg Trip Duration">
+            </div>
+            <div class="glass-card kpi-card fade-up" style="animation-delay: 0.4s">
+                <img src="assets/avg_rev_per_mile.png" alt="Avg Rev Per Mile">
+            </div>
+
+            <!-- Middle Row: Trends (Span 2 columns) -->
+            <div class="glass-card span-2 fade-up" style="animation-delay: 0.5s">
+                <div class="card-header">Revenue by Hour of Day</div>
+                <img src="assets/pickup_hour_vs_total_amount.png" alt="Peak Hours">
+            </div>
+            <div class="glass-card span-2 fade-up" style="animation-delay: 0.6s">
+                <div class="card-header">Trips by Day of Week</div>
+                <img src="assets/tpep_pickup_datetime_by_pickup_day.png" alt="Busiest Days">
+            </div>
+
+            <!-- Middle Row 2: Customer Segments -->
+            <div class="glass-card span-2 fade-up" style="animation-delay: 0.7s">
+                <div class="card-header">Payment Methods</div>
+                <img src="assets/tpep_pickup_datetime_by_payment_label.png" alt="Payment Methods">
+            </div>
+            <div class="glass-card span-2 fade-up" style="animation-delay: 0.8s">
+                <div class="card-header">Trip Distance Categories</div>
+                <img src="assets/tpep_pickup_datetime_by_fare_category.png" alt="Fare Categories">
+            </div>
+
+            <!-- Bottom Row: Deep Dives -->
+            <div class="glass-card span-2 fade-up" style="animation-delay: 0.9s">
+                <div class="card-header">Pricing Model: Distance vs. Fare</div>
+                <img src="assets/trip_dist_and_fare_amount.png" alt="Pricing Model">
+            </div>
+            <div class="glass-card span-2 fade-up" style="animation-delay: 1.0s">
+                <div class="card-header">Profitability: Airport Runs vs City Runs</div>
+                <img src="assets/avg_total_amount_vs_is_airport_trip.png" alt="Airport Runs">
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Cloud Architecture & Data Engineering Final Project</p>
+            <p class="members">Developed by: <span class="member-name">Ibrahim Haneef 23/IT/072</span> & <span class="member-name">Mohd. Uvais 23/IT/101</span></p>
+        </footer>
+    </div>
+
+    <!-- 3D Interactive Background Script -->
+    <script>
+        // Setup Three.js Scene
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        
+        // Camera setup
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 30; // Initial distance
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Create Particle Sphere
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 3000;
+        
+        const posArray = new Float32Array(particlesCount * 3);
+        const colorsArray = new Float32Array(particlesCount * 3);
+
+        const color1 = new THREE.Color(0xb026ff); // Neon Purple
+        const color2 = new THREE.Color(0x00f0ff); // Cyber Cyan
+
+        for(let i = 0; i < particlesCount * 3; i+=3) {
+            // Generate points on a sphere using spherical coordinates
+            const radius = 15;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos((Math.random() * 2) - 1);
+
+            posArray[i] = radius * Math.sin(phi) * Math.cos(theta);     // x
+            posArray[i+1] = radius * Math.sin(phi) * Math.sin(theta);   // y
+            posArray[i+2] = radius * Math.cos(phi);                     // z
+
+            // Mix colors randomly between purple and cyan
+            const mixedColor = Math.random() > 0.5 ? color1 : color2;
+            colorsArray[i] = mixedColor.r;
+            colorsArray[i+1] = mixedColor.g;
+            colorsArray[i+2] = mixedColor.b;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+
+        // Material
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.15,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        // Mesh
+        const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particleMesh);
+
+        // Mouse interaction logic
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) - 0.5;
+            mouseY = (event.clientY / window.innerHeight) - 0.5;
+        });
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            // Default slow rotation
+            particleMesh.rotation.y = elapsedTime * 0.05;
+            particleMesh.rotation.x = elapsedTime * 0.02;
+
+            // Parallax mouse effect
+            targetX = mouseX * 0.5;
+            targetY = mouseY * 0.5;
+            
+            particleMesh.rotation.y += 0.5 * (targetX - particleMesh.rotation.y);
+            particleMesh.rotation.x += 0.5 * (targetY - particleMesh.rotation.x);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // GSAP Video Interactive Logic
+        const video = document.getElementById('main-demo-video');
+        
+        // When video plays, sphere maximizes and speeds up
+        video.addEventListener('play', () => {
+            gsap.to(camera.position, {
+                z: 10, // Move camera deeply into the sphere
+                duration: 2.5,
+                ease: "power3.inOut"
+            });
+            gsap.to(particlesMaterial, {
+                size: 0.3, // Particles get larger
+                opacity: 1,
+                duration: 2.5
+            });
+        });
+
+        // When video pauses, sphere returns to normal
+        video.addEventListener('pause', () => {
+            gsap.to(camera.position, {
+                z: 30, // Return to default
+                duration: 2.5,
+                ease: "power3.inOut"
+            });
+            gsap.to(particlesMaterial, {
+                size: 0.15,
+                opacity: 0.8,
+                duration: 2.5
+            });
+        });
+        
+        video.addEventListener('ended', () => {
+            gsap.to(camera.position, { z: 30, duration: 2.5, ease: "power3.inOut" });
+            gsap.to(particlesMaterial, { size: 0.15, opacity: 0.8, duration: 2.5 });
+        });
+
+    </script>
+</body>
+</html>

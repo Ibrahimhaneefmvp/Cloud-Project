@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Taxi Analytics Engine - Architecture Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Three.js for Background & Chart.js for Data Viz -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    
+    <!-- 3D Interactive Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container fade-in">
+        
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <a href="index.html" class="nav-link">Live Dashboard</a>
+            <a href="presentation.html" class="nav-link active">Architecture Deck</a>
+        </nav>
+
+        <header class="header">
+            <div class="badge">SYSTEM WORKFLOW</div>
+            <h1>NYC Taxi <span class="highlight">Analytics</span> Engine</h1>
+            <p>End-to-End Cloud Data Pipeline & ETL Presentation</p>
+        </header>
+
+        <!-- Slide Deck Container -->
+        <main class="presentation-container glass-panel fade-up">
+            
+            <!-- Slide 1 -->
+            <div class="slide active" id="slide-1">
+                <h2>1. Cloud Architecture Overview</h2>
+                <p>Welcome to our end-to-end Data Engineering pipeline. This project ingests massive raw Parquet datasets of NYC Taxi logs and processes them entirely in the cloud, ensuring high performance, zero server management, and minimal cloud liabilities.</p>
+                <div class="slide-number">01 / 07</div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="slide" id="slide-2">
+                <h2>2. AWS S3: The Data Lake</h2>
+                <p>We began by downloading the 2024 NYC Taxi Parquet dataset. Before uploading to our Amazon S3 Bucket, we recognized that pushing raw, dirty data into the cloud is an expensive mistake. We executed a strict local ETL process first.</p>
+                <div class="slide-number">02 / 07</div>
+            </div>
+
+            <!-- Slide 3 (New: Data Cleansing) -->
+            <div class="slide" id="slide-3">
+                <h2>3. The Great Data Cleansing</h2>
+                <p>Using pandas and PyArrow, we aggressively filtered out anomalies to ensure dashboard integrity. We removed trips with negative fares, zero distances, extreme durations (> 4 hours), and impossible timestamps (dropoff before pickup).</p>
+                
+                <div class="slide-content-split">
+                    <div class="slide-text-left">
+                        <ul>
+                            <li><strong><span style="color:var(--accent-secondary)">Step 1:</span></strong> Filter invalid distances & fares</li>
+                            <li><strong><span style="color:var(--accent-secondary)">Step 2:</span></strong> Fix temporal anomalies</li>
+                            <li><strong><span style="color:var(--accent-secondary)">Step 3:</span></strong> Dedup identical pickup/dropoff logs</li>
+                        </ul>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;"><em>Result: A 100% pristine dataset ready for Athena.</em></p>
+                    </div>
+                    <div class="slide-chart-right">
+                        <canvas id="cleaningChart"></canvas>
+                    </div>
+                </div>
+                <div class="slide-number">03 / 07</div>
+            </div>
+
+            <!-- Slide 4 (New: Feature Engineering) -->
+            <div class="slide" id="slide-4">
+                <h2>4. Advanced Feature Engineering</h2>
+                <p>A BI Engine is only as good as its features. We engineered highly optimized columns during the ETL phase to prevent expensive SQL operations in Athena later.</p>
+                
+                <div class="slide-content-split">
+                    <div class="slide-text-left">
+                        <ul>
+                            <li><code>revenue_per_mile</code>: Identifying high-value geographic routes.</li>
+                            <li><code>tip_pct</code>: Tracking customer generosity trends.</li>
+                            <li><code>is_airport_trip</code>: Flagging lucrative RatecodeID trips.</li>
+                            <li><code>fare_category</code>: Binning trips into Short, Medium, Long.</li>
+                        </ul>
+                    </div>
+                    <div class="slide-chart-right">
+                        <canvas id="featureChart"></canvas>
+                    </div>
+                </div>
+                <div class="slide-number">04 / 07</div>
+            </div>
+
+            <!-- Slide 5 -->
+            <div class="slide" id="slide-5">
+                <h2>5. Amazon Athena: Serverless Querying</h2>
+                <p>With our highly compressed, clean Parquet file uploaded to S3, we utilized AWS Athena. By defining our schema using the AWS Glue Data Catalog, Athena allows us to run complex SQL aggregations. Because we pre-engineered our features, query costs are effectively $0.</p>
+                <div class="slide-number">05 / 07</div>
+            </div>
+
+            <!-- Slide 6 -->
+            <div class="slide" id="slide-6">
+                <h2>6. ODBC & Power BI: The Engine</h2>
+                <p>To visualize the data, we bridged the cloud backend with our rendering engine. We configured an ODBC driver on our local system to securely tunnel into AWS Athena, calculating dynamic KPIs and geographic insights in Power BI.</p>
+                <div class="slide-number">06 / 07</div>
+            </div>
+
+            <!-- Slide 7 -->
+            <div class="slide" id="slide-7">
+                <h2>7. The Premium Custom Frontend</h2>
+                <p>To break free from Microsoft's licensing paywalls and deliver a true SaaS experience, we decoupled the frontend. We exported the optimized Power BI visuals and embedded them into this custom-built, Three.js-powered web application.</p>
+                <div class="slide-number">07 / 07</div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn" id="prev-btn">&larr; Previous</button>
+                <button class="btn" id="next-btn">Next &rarr;</button>
+            </div>
+            
+        </main>
+
+        <footer class="footer">
+            <p>Cloud Architecture & Data Engineering Final Project</p>
+            <p class="members">Developed by: <span class="member-name">Ibrahim Haneef 23/IT/072</span> & <span class="member-name">Mohd. Uvais 23/IT/101</span></p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // --- 1. Three.js Background Logic (Same as index.html) ---
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 30;
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 3000;
+        const posArray = new Float32Array(particlesCount * 3);
+        const colorsArray = new Float32Array(particlesCount * 3);
+        const color1 = new THREE.Color(0xb026ff);
+        const color2 = new THREE.Color(0x00f0ff);
+
+        for(let i = 0; i < particlesCount * 3; i+=3) {
+            const radius = 15;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos((Math.random() * 2) - 1);
+            posArray[i] = radius * Math.sin(phi) * Math.cos(theta);
+            posArray[i+1] = radius * Math.sin(phi) * Math.sin(theta);
+            posArray[i+2] = radius * Math.cos(phi);
+            const mixedColor = Math.random() > 0.5 ? color1 : color2;
+            colorsArray[i] = mixedColor.r; colorsArray[i+1] = mixedColor.g; colorsArray[i+2] = mixedColor.b;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.15, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending
+        });
+
+        const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particleMesh);
+
+        let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) - 0.5;
+            mouseY = (event.clientY / window.innerHeight) - 0.5;
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+            particleMesh.rotation.y = elapsedTime * 0.05;
+            particleMesh.rotation.x = elapsedTime * 0.02;
+            targetX = mouseX * 0.5;
+            targetY = mouseY * 0.5;
+            particleMesh.rotation.y += 0.5 * (targetX - particleMesh.rotation.y);
+            particleMesh.rotation.x += 0.5 * (targetY - particleMesh.rotation.x);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- 2. Slide Deck Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            let currentSlide = 0;
+
+            function updateSlides() {
+                slides.forEach((slide, index) => {
+                    if (index === currentSlide) {
+                        slide.classList.add('active');
+                        slide.style.transform = 'translateX(0)';
+                    } else {
+                        slide.classList.remove('active');
+                        slide.style.transform = index < currentSlide ? 'translateX(-50px)' : 'translateX(50px)';
+                    }
+                });
+
+                prevBtn.style.opacity = currentSlide === 0 ? '0.5' : '1';
+                prevBtn.style.cursor = currentSlide === 0 ? 'not-allowed' : 'pointer';
+                nextBtn.style.opacity = currentSlide === slides.length - 1 ? '0.5' : '1';
+                nextBtn.style.cursor = currentSlide === slides.length - 1 ? 'not-allowed' : 'pointer';
+            }
+
+            prevBtn.addEventListener('click', () => { if (currentSlide > 0) { currentSlide--; updateSlides(); } });
+            nextBtn.addEventListener('click', () => { if (currentSlide < slides.length - 1) { currentSlide++; updateSlides(); } });
+            updateSlides();
+
+            // --- 3. Chart.js Implementation ---
+            // Chart 1: Data Cleansing Funnel/Bar
+            const ctx1 = document.getElementById('cleaningChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Raw Logs', 'Distance/Fare Filtered', 'Time Filtered', 'Final Deduped'],
+                    datasets: [{
+                        label: 'Rows Remaining (Millions)',
+                        data: [2.9, 2.7, 2.65, 2.5],
+                        backgroundColor: [
+                            'rgba(139, 155, 180, 0.5)',
+                            'rgba(176, 38, 255, 0.6)',
+                            'rgba(176, 38, 255, 0.8)',
+                            'rgba(0, 240, 255, 1)'
+                        ],
+                        borderColor: 'rgba(0, 240, 255, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'ETL Row Reduction Pipeline', color: '#f8fafc' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#8b9bb4' } },
+                        x: { grid: { display: false }, ticks: { color: '#8b9bb4', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Chart 2: Engineered Features Impact (Polar Area or Doughnut)
+            const ctx2 = document.getElementById('featureChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Short Trips', 'Medium Trips', 'Long Trips'],
+                    datasets: [{
+                        label: 'Fare Category Distribution',
+                        data: [65, 25, 10],
+                        backgroundColor: [
+                            'rgba(0, 240, 255, 0.8)',
+                            'rgba(176, 38, 255, 0.8)',
+                            'rgba(139, 155, 180, 0.8)'
+                        ],
+                        borderColor: 'transparent',
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#f8fafc' } },
+                        title: { display: true, text: 'Engineered Fare Category Binning', color: '#f8fafc' }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
